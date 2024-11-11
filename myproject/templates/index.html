@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片识别</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #4a4e69;
+        }
+        #uploadButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4a4e69;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #uploadButton:hover {
+            background-color: #9a8c98;
+        }
+        #result, #loading {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #222;
+        }
+        #error {
+            color: red;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        #uploadedImage {
+            margin-top: 20px;
+            max-width: 300px;
+            max-height: 300px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #4a4e69;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        input[type="file"] {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>图片识别</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="uploadButton">上传</button>
+    <div id="loading" style="display:none;">正在处理，请稍候...</div> <!-- 新增的加载提示 -->
+    <div id="result"></div>
+    <div id="error"></div>
+    <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none;">
+
+    <script>
+        document.getElementById('uploadButton').onclick = function() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                document.getElementById('error').innerText = '请先选择一张图片。';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const img = document.getElementById('uploadedImage');
+            img.src = URL.createObjectURL(file);
+            img.style.display = 'block';
+
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').innerText = '';
+            document.getElementById('error').innerText = '';
+
+            fetch('http://127.0.0.1:8000/api/predict/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('result').innerText = `识别结果: ${data.class}`;
+                document.getElementById('loading').style.display = 'none'; // 隐藏加载状态
+                document.getElementById('error').innerText = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = '';
+                document.getElementById('loading').style.display = 'none'; // 隐藏加载状态
+                document.getElementById('error').innerText = '预测过程中出现错误: ' + error.message;
+            });
+        };
+    </script>
+</body>
+</html>
