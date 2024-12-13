@@ -4,7 +4,7 @@ from PIL import Image
 import io
 
 # 加载模型（根据你的文件格式选择路径）
-model = tf.keras.models.load_model("C:/Users/xashuoxing/Desktop/神经网络项目/my_model.h5")  # 或者 .keras
+model = tf.keras.models.load_model("C:/Users/admin/Desktop/xiaohai/shenjing/my_model.h5")  # 或者 .keras
 
 # 定义预测函数
 def predict_image(image_data):
