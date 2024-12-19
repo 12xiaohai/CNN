@@ -57,4 +57,4 @@ test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print("测试集的准确度:", test_acc)
 
 # 保存模型
-model.save(r"C:\Users\admin\Desktop\xiaohai\my_model.h5")  # 保存到指定路径
+model.save(r"shenjing\my_model.h5")  # 保存到指定路径
